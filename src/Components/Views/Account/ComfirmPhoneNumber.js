@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 
 export default function ComfirmPhoneNumber() {
     return (
@@ -8,3 +8,5 @@ export default function ComfirmPhoneNumber() {
         </View>
     )
 }
+
+const styles = StyleSheet.create({})
