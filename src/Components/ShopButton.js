@@ -33,6 +33,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         borderWidth: 3,
         borderColor: "#fff",
-        tintColor: "fff"
+        tintColor: "#fff"
     }
 })
