@@ -17,10 +17,8 @@ export default function LoginForm(props) {
         } 
         else if (!validateEmail(email)) {
             toastRef.current.show("Enter a correct email!")
-
         }
     }
-
 
     return (
       <View style={styles.container}>
@@ -32,7 +30,7 @@ export default function LoginForm(props) {
           }}
         />
         <Input
-        value={email}
+          value={email}
           containerStyle={styles.input}
           placeholder="email@address.com"
           rightIcon={{
@@ -45,6 +43,9 @@ export default function LoginForm(props) {
             name: "at",
             color: "#128C7E",
           }}
+          onChangeText={(text) => {
+            setEmail(text);
+          }}
         />
         <Input
           secureTextEntry={true}
@@ -56,10 +57,10 @@ export default function LoginForm(props) {
             type: "font-awesome",
             name: "eye",
             color: "#128C7E",
-            onPress: () => alert("Has hecho clic en email"),
+            onPress: () => alert("Has hecho clic en password"),
           }}
           onChangeText={(text) => {
-            setPassword(text)
+            setPassword(text);
           }}
         />
         <Button
