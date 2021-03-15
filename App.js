@@ -9,9 +9,8 @@ import Loading from "./src/Components/Loading";
 export default function App() {
   const [user, setUser] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
-  closeSession();
 
+  closeSession();
 
   useEffect(() => {
     setIsLoading(true);
@@ -20,15 +19,9 @@ export default function App() {
   }, []);
 
   if (isLoading) {
-    return (
-      <Loading
-        isVisible={isLoading}
-        text="Loading .... plase wait!"
-      />
-    );
-  } else {
-    return user ? <SwicthNavigator/> : <UnprotectedRoutes/> 
+    return <Loading isVisible={isLoading} text="Loading .... plase wait!" />;
   }
+  return user ? <SwicthNavigator /> : <UnprotectedRoutes />;
 }
 
 const styles = StyleSheet.create({

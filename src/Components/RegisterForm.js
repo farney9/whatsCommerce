@@ -3,41 +3,45 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Icon, Input, Button, Divider } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import { Utils, validateEmail } from "../Components/Utils/Utils";
-import { isEmpty } from "lodash";
-import { validateSesion,closeSession } from "./Utils/Actions";
+import { isEmpty, size } from "lodash";
+import { validateSesion } from "./Utils/Actions";
 import Loading from "../Components/Loading";
-
 import * as firebase from "firebase";
 
-export default function LoginForm(props) {
+export default function RegisterForm(props) {
   const { toastRef } = props;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showConfirmPassword, setShowConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
   const navigation = useNavigation();
 
-  // closeSession();
+  validateSesion();
 
-  const startSesion = () => {
-    if (isEmpty(email || isEmpty(password))) {
-      toastRef.current.show("Email or password is empty");
+  const createAccount = () => {
+    if (isEmpty(email) || isEmpty(password) || isEmpty(confirmPassword)) {
+      toastRef.current.show("Email or passwords are empty");
     } else if (!validateEmail(email)) {
       toastRef.current.show("Enter a correct email!");
+    } else if (password !== confirmPassword) {
+      toastRef.current.show("Password and Confirm Password not match!");
+    } else if (size(password) < 6) {
+      toastRef.current.show("The passwords must be at least 6 characters!");
     } else {
       setIsLoading(true);
       firebase
         .auth()
-        .signInWithEmailAndPassword(email, password)
+        .createUserWithEmailAndPassword(email, password)
         .then((response) => {
-          setIsLoading(false);
-          console.log(firebase.auth().currentUser);
-          toastRef.current.show("Todo bien!");
+            setIsLoading(false);
+            toastRef.current.show("User has been created successfully!");
+            // console.log(response);
         })
         .catch((err) => {
           setIsLoading(false);
-          // console.log(err.message);
+          console.log(err.message);
           toastRef.current.show(err.message);
         });
     }
@@ -86,8 +90,32 @@ export default function LoginForm(props) {
           setPassword(text);
         }}
       />
+      <Input
+        secureTextEntry={!showConfirmPassword}
+        value={confirmPassword}
+        containerStyle={styles.input}
+        placeholder="Confirm Password"
+        leftIcon={{ type: "font-awesome", name: "key", color: "#128C7E" }}
+        rightIcon={{
+          type: "font-awesome",
+          name: showConfirmPassword ? "eye" : "eye-slash",
+          color: "#128C7E",
+          onPress: () => setShowConfirmPassword(!showConfirmPassword),
+        }}
+        onChangeText={(txt) => {
+          setConfirmPassword(txt);
+        }}
+      />
+      <View
+        style={{
+          borderBottomColor: "#25D366",
+          borderBottomWidth: 2,
+          width: 100,
+          marginVertical: 15,
+        }}
+      />
       <Button
-        containerStyle={styles.btnLogin}
+        containerStyle={styles.btnRegister}
         buttonStyle={{
           backgroundColor: "#25D366",
           borderTopLeftRadius: 20,
@@ -95,57 +123,21 @@ export default function LoginForm(props) {
           borderBottomLeftRadius: 20,
           borderBottomRightRadius: 20,
         }}
-        onPress={() => startSesion()}
+        onPress={() => createAccount()}
+        title="Register"
+      />
+      <Button
+        containerStyle={styles.btnGoToLogin}
+        buttonStyle={{
+          backgroundColor: "#128C7E",
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          borderBottomLeftRadius: 20,
+          borderBottomRightRadius: 20,
+        }}
+        onPress={() => navigation.goBack()}
         title="Login"
       />
-      <Text style={{ marginVertical: 10 }}>
-        ¿No tienes cuenta? |
-        <Text
-          style={styles.btnCrearCuenta}
-          onPress={() => navigation.navigate("register")}
-        >
-          {" "}
-          Crear cuenta
-        </Text>
-      </Text>
-      <Divider
-        style={{
-          backgroundColor: "#128C7E",
-          height: 1,
-          width: "90%",
-          marginVertical: 10,
-        }}
-      />
-      <Text
-        style={{
-          fontSize: 20,
-          fontWeight: "bold",
-          marginVertical: 5,
-          color: "#128C7E",
-        }}
-      >
-        ó
-      </Text>
-      <View style={styles.btnGroupLoginWithSocials}>
-        <TouchableOpacity style={styles.btnLoginWithSocials}>
-          <Icon
-            type="material-community"
-            size={24}
-            name="google"
-            color="#fff"
-            backgroundColor="transparent"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btnLoginWithSocials}>
-          <Icon
-            type="material-community"
-            size={24}
-            name="facebook"
-            color="#fff"
-            backgroundColor="transparent"
-          />
-        </TouchableOpacity>
-      </View>
       <Loading
         isVisible={isLoading}
         text="We're working very Hard .... plase wait!"
@@ -169,30 +161,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     height: 50,
   },
-  btnLogin: {
+  btnRegister: {
     width: "90%",
   },
-  btnCrearCuenta: {
-    color: "#128C7E",
-    fontWeight: "bold",
-    fontSize: 15,
-  },
-  btnGroupLoginWithSocials: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-  },
-  btnLoginWithSocials: {
-    backgroundColor: "#25D366",
-    // height: 40,
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    alignContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
+  btnGoToLogin: {
+    width: "90%",
+    marginVertical: 5,
   },
 });
